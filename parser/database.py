@@ -1,8 +1,18 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, MetaData, Table, Column, String, Integer
 
-SQLALCHEMY_DATABASE_URL = f'postgresql://dataox:dataox@localhost:5432/dataox_db'
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+engine = create_engine("postgresql+psycopg2://postgres:260592@localhost/test_db")
+
+metadata = MetaData()
+
+apartments_db = Table('apartments_db', metadata,
+                      Column('id', Integer, primary_key=True),
+                      Column('img_link', String),
+                      Column('title_text', String),
+                      Column('date_posted', String),
+                      Column('location', String),
+                      Column('bedrooms', String),
+                      Column('description', String),
+                      Column('price', String),
+                      Column('currency', String))
+
+metadata.create_all(engine)
