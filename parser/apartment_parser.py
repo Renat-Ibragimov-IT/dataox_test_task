@@ -1,8 +1,8 @@
 import datetime
 
-from postgres_connector import engine
-from postgres_model import apartments_db
-from google_sheets_connector import service, spreadsheet_id
+from postgres.postgres_connector import engine
+from postgres.postgres_model import apartments_db
+from google_sheets.google_sheets_connector import service, spreadsheet_id
 
 
 class ApartmentParser:

@@ -1,5 +1,5 @@
 from sqlalchemy import MetaData, Table, Column, Integer, String
-from postgres_connector import engine
+from postgres.postgres_connector import engine
 
 metadata = MetaData()
 

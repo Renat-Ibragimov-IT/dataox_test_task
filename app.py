@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
-from apartment_parser import ApartmentParser
-from webdriver import WebDriver
+from parser.apartment_parser import ApartmentParser
+from parser.webdriver import WebDriver
 
 
 def get_soup(page_num: int) -> BeautifulSoup:
@@ -31,7 +31,7 @@ def parser(browser):
     "Next" button. If this button does not exist parsing should be finished."""
     apartments = browser.find_all('div', class_='search-item')
     for apartment in apartments:
-        ApartmentParser(apartment).save_to_google_sheets()
+        ApartmentParser(apartment).save_to_postgres()
     try:
         browser.find('a', {'title': 'Next'})['href']
     except TypeError:
