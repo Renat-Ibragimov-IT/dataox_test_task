@@ -4,6 +4,9 @@ from selenium import webdriver
 from parser.apartment_parser import ApartmentParser
 from parser.webdriver import WebDriver
 
+from google_sheets.google_sheets_saver import GoogleSheetsSaver
+from postgres.postgres_saver import PostgresSaver
+
 
 def get_soup(page_num: int) -> BeautifulSoup:
     """Function to get html.parser from WebDriver object.
@@ -20,7 +23,7 @@ def get_soup(page_num: int) -> BeautifulSoup:
         return BeautifulSoup(wd.page_source, 'html.parser')
 
 
-def parser(browser):
+def parser(browser, db_saver):
     """Function to call parser object for each apartment on the page and send
     it to parser object. In case there is needed to safe all data to
     PostgresSQL parser object function "save_to_postgres()" should be called,
@@ -31,7 +34,7 @@ def parser(browser):
     "Next" button. If this button does not exist parsing should be finished."""
     apartments = browser.find_all('div', class_='search-item')
     for apartment in apartments:
-        ApartmentParser(apartment).save_to_postgres()
+        ApartmentParser(apartment).save(db_saver)
     try:
         browser.find('a', {'title': 'Next'})['href']
     except TypeError:
@@ -47,7 +50,7 @@ def get_parser_for_pages(page_from: int, page_to: int):
     less than 'page_to' argument, parser() function will terminate parsing
     after the last page on website using try-except block"""
     for page in range(page_from, page_to):
-        parser(get_soup(page))
+        parser(get_soup(page), GoogleSheetsSaver)
 
 
 if __name__ == '__main__':
