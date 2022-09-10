@@ -21,13 +21,17 @@ def get_soup(page_num: int) -> BeautifulSoup:
 
 
 def parser(browser):
-    """Function to call parser object for each apartment on the page.
+    """Function to call parser object for each apartment on the page and send
+    it to parser object. In case there is needed to safe all data to
+    PostgresSQL parser object function "save_to_postgres()" should be called,
+    if needed to save to Google Sheets, call parser object function
+    "save_to_google_sheets()".
     browser: html.parser -> html page receiving by BeautifulSoup.
     As testing website have dynamic pagination we should check availability of
     "Next" button. If this button does not exist parsing should be finished."""
     apartments = browser.find_all('div', class_='search-item')
     for apartment in apartments:
-        ApartmentParser(apartment).save_to_db()
+        ApartmentParser(apartment).save_to_google_sheets()
     try:
         browser.find('a', {'title': 'Next'})['href']
     except TypeError:
