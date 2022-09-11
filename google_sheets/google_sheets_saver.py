@@ -1,4 +1,4 @@
-from google_sheets.google_sheets_connector import service, spreadsheet_id
+from google_sheets.google_sheets_connector import service, SPREADSHEET_ID
 
 
 class GoogleSheetsSaver:
@@ -14,7 +14,7 @@ class GoogleSheetsSaver:
                                  data["bedrooms"], data["description"],
                                  data["price"], data["currency"]])
         self.service.spreadsheets().values().append(
-            spreadsheetId=spreadsheet_id,
+            spreadsheetId=SPREADSHEET_ID,
             range="A1",
             valueInputOption="RAW",
             body={'values': data_to_save}).execute()

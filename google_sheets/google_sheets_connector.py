@@ -1,9 +1,10 @@
 import httplib2
 import apiclient.discovery
+import config
 from oauth2client.service_account import ServiceAccountCredentials
 
-CREDENTIALS_FILE = 'credentials.json'
-spreadsheet_id = '1_MXpz6URmT-Cz5Tas9SlirPQO9tc75fT6u5vXqg26LA'
+CREDENTIALS_FILE = config.GS_CREDENTIALS_FILE
+SPREADSHEET_ID = config.GS_SPREADSHEET_ID
 
 
 credentials = ServiceAccountCredentials.from_json_keyfile_name(
@@ -16,7 +17,7 @@ service = apiclient.discovery.build('sheets', 'v4', http=httpAuth)
 
 def init_column_names():
     service.spreadsheets().values().batchUpdate(
-        spreadsheetId=spreadsheet_id,
+        spreadsheetId=SPREADSHEET_ID,
         body={
             "valueInputOption": "USER_ENTERED",
             "data": [
