@@ -1,9 +1,5 @@
 import datetime
 
-from postgres.postgres_connector import engine
-from postgres.postgres_model import apartments_db
-from google_sheets.google_sheets_connector import service, spreadsheet_id
-
 
 class ApartmentParser:
     """Class for creating parser object which should collect required info,
@@ -75,36 +71,9 @@ class ApartmentParser:
             'div', class_='price').text.strip()[0]
         return 'Unknown' if currency == 'P' else currency
 
-    # def save_to_postgres(self):
-    #     """Method to save all collected info for each apartment to
-    #     PostgresSQL"""
-    #     new_row = apartments_db.insert().values(
-    #         img_link=self.img_link,
-    #         title_text=self.title_text,
-    #         date_posted=self.date_posted,
-    #         location=self.location,
-    #         bedrooms=self.bedrooms,
-    #         description=self.description,
-    #         price=self.price,
-    #         currency=self.currency
-    #     )
-    #     connection = engine.connect()
-    #     connection.execute(new_row)
-
-    # def save_to_google_sheets(self):
-    #     """Method to save all collected info for each apartment to
-    #     Google Sheets"""
-    #     service.spreadsheets().values().append(
-    #         spreadsheetId=spreadsheet_id,
-    #         range="A1",
-    #         valueInputOption="RAW",
-    #         body={'values': [
-    #             [self.img_link, self.title_text, self.date_posted,
-    #              self.location, self.bedrooms, self.description, self.price,
-    #              self.currency]]}).execute()
     def save(self, saver):
         data = {"img_link": self.img_link, "title_text": self.title_text,
                 "date_posted": self.date_posted, "location": self.location,
                 "bedrooms": self.bedrooms, "description": self.description,
                 "price": self.price, "currency": self.currency}
-        saver.save(self, data)
+        saver.save(data)

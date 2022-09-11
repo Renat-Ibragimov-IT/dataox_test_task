@@ -1,11 +1,12 @@
+import argparse
+import logging
+
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
 from parser.apartment_parser import ApartmentParser
+from parser.saver_choice import get_saver
 from parser.webdriver import WebDriver
-
-from google_sheets.google_sheets_saver import GoogleSheetsSaver
-from postgres.postgres_saver import PostgresSaver
 
 
 def get_soup(page_num: int) -> BeautifulSoup:
@@ -17,13 +18,13 @@ def get_soup(page_num: int) -> BeautifulSoup:
             "userAgent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                          'AppleWebKit/537.36 (KHTML, like Gecko) '
                          'Chrome/83.0.4103.97 Safari/537.36'})
-        url = f'https://www.kijiji.ca/b-apartments-condos/page-{page_num}/' \
-              f'city-of-toronto/c37l1700273'
+        url = f'https://www.kijiji.ca/b-apartments-condos/page-{page_num}' \
+              f'/city-of-toronto/c37l1700273'
         wd.get(url)
         return BeautifulSoup(wd.page_source, 'html.parser')
 
 
-def parser(browser, db_saver):
+def page_parser(browser, saver):
     """Function to call parser object for each apartment on the page and send
     it to parser object. In case there is needed to safe all data to
     PostgresSQL parser object function "save_to_postgres()" should be called,
@@ -34,7 +35,7 @@ def parser(browser, db_saver):
     "Next" button. If this button does not exist parsing should be finished."""
     apartments = browser.find_all('div', class_='search-item')
     for apartment in apartments:
-        ApartmentParser(apartment).save(db_saver)
+        ApartmentParser(apartment).save(saver)
     try:
         browser.find('a', {'title': 'Next'})['href']
     except TypeError:
@@ -50,8 +51,21 @@ def get_parser_for_pages(page_from: int, page_to: int):
     less than 'page_to' argument, parser() function will terminate parsing
     after the last page on website using try-except block"""
     for page in range(page_from, page_to):
-        parser(get_soup(page), GoogleSheetsSaver)
+        with get_saver(args.save_to) as saver:
+            page_parser(get_soup(page), saver)
+    logging.info("Completed")
 
 
 if __name__ == '__main__':
-    get_parser_for_pages(1, 2)
+    parser = argparse.ArgumentParser(description="Parser app")
+    parser.add_argument('-page_from', default=1, type=int,
+                        help="Specify the site page to start parsing")
+    parser.add_argument('-page_to', default=2, type=int,
+                        help="Specify the site page to start parsing")
+    parser.add_argument('-save_to', choices=['postgres', 'google_sheets'],
+                        default='postgres',
+                        help="Specify how the data will be saved")
+    args = parser.parse_args()
+
+    get_parser_for_pages(args.page_from, args.page_to)
+

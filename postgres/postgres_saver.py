@@ -3,6 +3,10 @@ from postgres.postgres_model import apartments_db
 
 
 class PostgresSaver:
+    def __enter__(self):
+        self.connection = engine.connect()
+        return self
+
     def save(self, data):
         new_row = apartments_db.insert().values(
             img_link=data["img_link"],
@@ -14,5 +18,8 @@ class PostgresSaver:
             price=data["price"],
             currency=data["currency"]
         )
-        connection = engine.connect()
-        connection.execute(new_row)
+
+        self.connection.execute(new_row)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.connection.close()
