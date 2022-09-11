@@ -3,14 +3,16 @@ version: "3.7"
 services:
   postgres:
     image: postgres:11
+    environment:
+      POSTGRES_DB: "dataox_db"
+      POSTGRES_USER: "dataox"
+      POSTGRES_PASSWORD: "dataox"
     ports:
-      - 5432:5432
+      - 5433:5432
 
-  web:
+  app:
     build: .
-    command: “/opt/venv/bin/python app.py”
-    volumes:
-      - .:/parser
+    command: python ./app.py
     depends_on:
       - postgres
     env_file:
