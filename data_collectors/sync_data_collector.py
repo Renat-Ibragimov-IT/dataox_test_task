@@ -31,27 +31,24 @@ class SyncParser:
 
     def collect_soup(self, page_from: int, page_to: int):
         for page in range(page_from, page_to + 1):
-            self.all_soups.append(self.get_soup(page))
+            current_page_soup = self.get_soup(page)
+            self.all_soups.append(current_page_soup)
             logger(f'Page # {page} parsed')
-            try:
-                self.all_soups[-1].find('a', {'title': 'Next'})['href']
-            except TypeError:
+            if not current_page_soup.find('a', {'title': 'Next'}):
                 logger(f'Last page # {page} found')
                 break
 
-    def collect_apartments_cards(self, all_pages_soup_list) -> list:
+    def collect_apartments_cards(self, all_pages_soup_list):
         for page_soup in all_pages_soup_list:
             apartments_on_page = page_soup.find_all(
                 'div', class_='search-item')
             for apartment_card in apartments_on_page:
                 self.apartments.append(apartment_card)
-        return self.apartments
 
-    def get_parsed_data(self, cards_collection: list) -> list:
+    def get_parsed_data(self, cards_collection: list):
         for card in cards_collection:
             self.parsed_data.append(ApartmentParser(card)
                                     .collect_parsed_data())
-        return self.parsed_data
 
     def run_parser(self, page_from: int, page_to: int, save_to):
         self.collect_soup(page_from, page_to)
