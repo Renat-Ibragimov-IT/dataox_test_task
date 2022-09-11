@@ -1,10 +1,11 @@
 import asyncio
-
 import aiohttp
+
 from bs4 import BeautifulSoup
+from parser.apartment_parser import ApartmentParser
 
 
-class AsyncParser:
+class AsyncDataCollector:
     def __init__(self, page_from, page_to, save_to):
         self.page_from = page_from
         self.page_to = page_to
@@ -14,15 +15,14 @@ class AsyncParser:
                            'AppleWebKit/537.36 (KHTML, like Gecko) '
                            'Chrome/86.0.4240.198 Safari/537.36 '
                            'OPR/72.0.3815.465 (Edition Yx GX)'}
-        self.soup_list = []
-        self.run_parser = asyncio.run(
-            self.get_tasks(self.page_from, self.page_to))
+        self.soup = []
+        self.run_collector(self.page_from, self.page_to)
+        self.run_parser = ApartmentParser(self.soup, self.save_to)
 
     async def get_soup(self, url, session):
         async with session.get(url, headers=self.user_agent) as resp:
             source = await resp.read()
-            self.soup_list.append(BeautifulSoup(source, 'html.parser'))
-            return print(len(self.soup_list))
+            self.soup.append(BeautifulSoup(source, 'html.parser'))
 
     async def get_tasks(self, page_from, page_to):
         tasks = []
@@ -39,4 +39,5 @@ class AsyncParser:
         async with sem:
             await self.get_soup(url, session)
 
-
+    def run_collector(self, page_from, page_to):
+        asyncio.run(self.get_tasks(page_from, page_to))

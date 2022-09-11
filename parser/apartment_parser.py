@@ -1,19 +1,16 @@
 import datetime
+from bs4 import BeautifulSoup
+from parser.saver_choice import get_saver
 
 
 class ApartmentParser:
     """Class for creating parser object which should collect required info,
     validate it and save all parsed data to list"""
-    def __init__(self, apartment):
-        self.apartment = apartment
-        self.img_link = self.parse_img_links()
-        self.title_text = self.parse_title_text()
-        self.date_posted = self.parse_date_posted()
-        self.location = self.parse_location()
-        self.bedrooms = self.parse_bedrooms()
-        self.description = self.parse_description()
-        self.price = self.parse_price()
-        self.currency = self.parse_currency()
+    def __init__(self, soup, save_to):
+        self.soup = soup
+        self.save_to = save_to
+        self.apartment = BeautifulSoup('')
+        self.run_saver(self.save_to)
 
     def parse_img_links(self) -> str:
         """Method to check availability and parse the images links"""
@@ -71,11 +68,36 @@ class ApartmentParser:
             'div', class_='price').text.strip()[0]
         return 'Unknown' if currency == 'P' else currency
 
-    def collect_parsed_data(self):
+    def apartments_cards(self):
+        apartments_cards = []
+        for page_soup in self.soup:
+            apartments_on_page = page_soup.find_all(
+                'div', class_='search-item')
+            for apartment_card in apartments_on_page:
+                apartments_cards.append(apartment_card)
+        return apartments_cards
+
+    def get_parsed_data(self, cards_collection: list):
+        parsed_data = []
+        for card in cards_collection:
+            parsed_data.append(self.collect_parsed_data(card))
+        return parsed_data
+
+    def collect_parsed_data(self, apartment_card):
         """Method to collect all parsed data and save it to list for
         future use"""
-        data = {"img_link": self.img_link, "title_text": self.title_text,
-                "date_posted": self.date_posted, "location": self.location,
-                "bedrooms": self.bedrooms, "description": self.description,
-                "price": self.price, "currency": self.currency}
+        self.apartment = apartment_card
+        data = {"img_link": self.parse_img_links(),
+                "title_text": self.parse_title_text(),
+                "date_posted": self.parse_date_posted(),
+                "location": self.parse_location(),
+                "bedrooms": self.parse_bedrooms(),
+                "description": self.parse_description(),
+                "price": self.parse_price(),
+                "currency": self.parse_currency()}
         return data
+
+    def run_saver(self, save_to):
+        parsed_data = self.get_parsed_data(self.apartments_cards())
+        with get_saver(save_to) as saver:
+            saver.save(parsed_data)
