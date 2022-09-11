@@ -14,7 +14,7 @@ class SyncDataCollector:
         self.wd = WebDriver
         self.soup = []
         self.run_collector(page_from, page_to)
-        self.run_parser = ApartmentParser(self.soup, self.save_to)
+        ApartmentParser(self.soup, self.save_to)
 
     def get_soup(self, page_num: int) -> BeautifulSoup:
         with self.wd(webdriver.Chrome()) as wd:

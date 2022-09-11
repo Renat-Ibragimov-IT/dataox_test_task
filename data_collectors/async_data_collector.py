@@ -3,6 +3,7 @@ import aiohttp
 
 from bs4 import BeautifulSoup
 from parser.apartment_parser import ApartmentParser
+from parser.logger_conf import logger
 
 
 class AsyncDataCollector:
@@ -17,12 +18,13 @@ class AsyncDataCollector:
                            'OPR/72.0.3815.465 (Edition Yx GX)'}
         self.soup = []
         self.run_collector(self.page_from, self.page_to)
-        self.run_parser = ApartmentParser(self.soup, self.save_to)
+        ApartmentParser(self.soup, self.save_to)
 
-    async def get_soup(self, url, session):
+    async def get_soup(self, url, session, page_number):
         async with session.get(url, headers=self.user_agent) as resp:
             source = await resp.read()
             self.soup.append(BeautifulSoup(source, 'html.parser'))
+            logger(f'Page # {page_number} parsed')
 
     async def get_tasks(self, page_from, page_to):
         tasks = []
@@ -32,12 +34,12 @@ class AsyncDataCollector:
                 url = f'https://www.kijiji.ca/b-apartments-condos/' \
                       f'page-{number}/city-of-toronto/c37l1700273'
                 tasks.append(asyncio.ensure_future(
-                    self.bound_fetch(sem, url, session)))
+                    self.bound_fetch(sem, url, session, number)))
             await asyncio.gather(*tasks)
 
-    async def bound_fetch(self, sem, url, session):
+    async def bound_fetch(self, sem, url, session, page_number):
         async with sem:
-            await self.get_soup(url, session)
+            await self.get_soup(url, session, page_number)
 
     def run_collector(self, page_from, page_to):
         asyncio.run(self.get_tasks(page_from, page_to))
