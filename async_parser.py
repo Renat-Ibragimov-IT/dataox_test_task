@@ -19,7 +19,7 @@ async def get_soup(session, url):
             ApartmentParser(apartment).save_to_postgres()
 
 
-async def main():
+async def async_main():
     async with aiohttp.ClientSession() as session:
         tasks = []
         for number in range(1, 10):

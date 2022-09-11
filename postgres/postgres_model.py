@@ -1,17 +1,22 @@
-from sqlalchemy import MetaData, Table, Column, Integer, String
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
 from postgres.postgres_connector import engine
 
-metadata = MetaData()
+Base = declarative_base()
 
-apartments_db = Table('apartments_db', metadata,
-                      Column('id', Integer, primary_key=True),
-                      Column('img_link', String),
-                      Column('title_text', String),
-                      Column('date_posted', String),
-                      Column('location', String),
-                      Column('bedrooms', String),
-                      Column('description', String),
-                      Column('price', String),
-                      Column('currency', String))
 
-metadata.create_all(engine)
+class Apartment(Base):
+    __tablename__ = 'apartments_db'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    img_link = Column(String)
+    title_text = Column(String)
+    date_posted = Column(String)
+    location = Column(String)
+    bedrooms = Column(String)
+    description = Column(String)
+    price = Column(String)
+    currency = Column(String)
+
+
+Base.metadata.create_all(engine)

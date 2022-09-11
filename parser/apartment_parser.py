@@ -3,7 +3,7 @@ import datetime
 
 class ApartmentParser:
     """Class for creating parser object which should collect required info,
-    validate it and save to PostgresSQL or Google Sheets"""
+    validate it and save all parsed data to list"""
     def __init__(self, apartment):
         self.apartment = apartment
         self.img_link = self.parse_img_links()
@@ -71,9 +71,11 @@ class ApartmentParser:
             'div', class_='price').text.strip()[0]
         return 'Unknown' if currency == 'P' else currency
 
-    def save(self, saver):
+    def collect_parsed_data(self):
+        """Method to collect all parsed data and save it to list for
+        future use"""
         data = {"img_link": self.img_link, "title_text": self.title_text,
                 "date_posted": self.date_posted, "location": self.location,
                 "bedrooms": self.bedrooms, "description": self.description,
                 "price": self.price, "currency": self.currency}
-        saver.save(data)
+        return data
