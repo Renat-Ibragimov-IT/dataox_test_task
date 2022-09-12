@@ -1,11 +1,11 @@
-import httplib2
 import apiclient.discovery
-import config
+import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
+
+import config
 
 CREDENTIALS_FILE = config.GS_CREDENTIALS_FILE
 SPREADSHEET_ID = config.GS_SPREADSHEET_ID
-
 
 credentials = ServiceAccountCredentials.from_json_keyfile_name(
     CREDENTIALS_FILE,
@@ -16,6 +16,10 @@ service = apiclient.discovery.build('sheets', 'v4', http=httpAuth)
 
 
 def init_column_names():
+    """
+    Function witch will initialize column names when start working with
+    Google Sheets spreadsheet.
+    """
     service.spreadsheets().values().batchUpdate(
         spreadsheetId=SPREADSHEET_ID,
         body={
