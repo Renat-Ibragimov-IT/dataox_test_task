@@ -15,12 +15,12 @@ command will start parsing pages from the first to the tenth with
 sync scenario using Selenium and saving parsed data to the PostgreSQL DB 
 by default. For changing parameters CLI command can be used
 There are four parameter for command: 
-page_from : int -> Specified the site page to start parsing.
-page_to : int -> Specified the site page to end parsing.
-save_to : str -> Specified how the data will be saved (choices are "postgres" 
-    or "google_sheets").
-parser_type : str -> Specified which type of parsing to use (choices are "sync"
-    or "async").
+ - page_from : int -> Specified the site page to start parsing.
+ - page_to : int -> Specified the site page to end parsing.
+ - save_to : str -> Specified how the data will be saved (choices are "postgres" 
+   or "google_sheets").
+ - parser_type : str -> Specified which type of parsing to use (choices are "sync"
+   or "async").
 So, for example: command "python app.py 10 100 google_sheets async" will start
 app to parse pages from 10 to 100 with async scenario and save parsed data to
 Google Sheets spreadsheet.
