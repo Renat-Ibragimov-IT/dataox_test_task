@@ -39,8 +39,8 @@ Google Sheets spreadsheet.
    be created as per [this guide](https://developers.google.com/workspace/guides/create-credentials#create_credentials_for_a_service_account).
  - This app using some Environment Variables. .env file containing security
    info and in normal case should not be uploaded to the Git. But for testing
-   purpose there is .env.example file, containing some default values. So, for
- - normal work of app, please rename .env.example file to .env.
+   purpose there is .env.example file, containing some default values. So, for 
+   normal work of app, please rename .env.example file to .env.
  - App can be started now using 
    "python app.py [page_from] [page_to] [save_to] [parser_type]" command.
 
